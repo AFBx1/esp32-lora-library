@@ -28,19 +28,20 @@ A simple **sender** program...
 
 void task_tx(void *p)
 {
-   for(;;) {
-      vTaskDelay(pdMS_TO_TICKS(5000));
-      lora_send_packet((uint8_t*)"Hello", 5);
-      printf("packet sent...\n");
-   }
+    for(;;) {
+        lora_send();
+        vTaskDelay(pdMS_TO_TICKS(5000));
+        lora_send_packet((uint8_t*)"Hello", 5);
+        printf("packet sent...\n");
+    }
 }
 
 void app_main()
 {
-   lora_init();
-   lora_set_frequency(915e6);
-   lora_enable_crc();
-   xTaskCreate(&task_tx, "task_tx", 2048, NULL, 5, NULL);
+    lora_init();
+    lora_set_frequency(433e6);
+    lora_enable_crc();
+    xTaskCreate(&task_tx, "task_tx", 2048, NULL, 5, NULL);
 }
 
 ```
@@ -50,30 +51,31 @@ Meanwhile in the **receiver** program...
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "lora.h"
+#include "driver/gpio.h"
 
-uint8_t but[32];
+uint8_t buf[32];
 
 void task_rx(void *p)
 {
-   int x;
-   for(;;) {
-      lora_receive();    // put into receive mode
-      while(lora_received()) {
-         x = lora_receive_packet(buf, sizeof(buf));
-         buf[x] = 0;
-         printf("Received: %s\n", buf);
-         lora_receive();
-      }
-      vTaskDelay(1);
-   }
+    int x;
+    for(;;) {
+        lora_receive();    // put into receive mode
+        while(lora_received()) {
+            x = lora_receive_packet(buf, sizeof(buf));
+            buf[x] = 0;
+            printf("Received: %s\n", buf);
+            lora_receive();
+        }
+        vTaskDelay(1);
+    }
 }
 
 void app_main()
 {
-   lora_init();
-   lora_set_frequency(915e6);
-   lora_enable_crc();
-   xTaskCreate(&task_rx, "task_rx", 2048, NULL, 5, NULL);
+    lora_init();
+    lora_set_frequency(433e6);
+    lora_enable_crc();
+    xTaskCreate(&task_rx, "task_rx", 2048, NULL, 5, NULL);
 }
 ```
 
