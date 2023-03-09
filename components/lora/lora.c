@@ -7,6 +7,17 @@
 #include "driver/gpio.h"
 #include <string.h>
 
+/******************************************/
+/* ESP32 menuconfig adaptation to Mongoose
+/* OS by adding pin numbers by hand for
+/* Heltec LoRa32 V2 board.                */
+
+#define CONFIG_SCK_GPIO                18
+#define CONFIG_RST_GPIO                14
+#define CONFIG_SCK_GPIO                5
+#define CONFIG_MISO_GPIO               19
+#define CONFIG_MOSI_GPIO               27
+
 /*
  * Register definitions
  */
